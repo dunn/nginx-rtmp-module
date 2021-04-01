@@ -790,18 +790,18 @@ ngx_rtmp_exec_run(ngx_rtmp_exec_t *e)
 
             maxfd = sysconf(_SC_OPEN_MAX);
             for (fd = 0; fd < maxfd; ++fd) {
-                if (fd == pipefd[1]) {
+                if ((fd == pipefd[1]) || (fd == STDOUT_FILENO) || (fd == STDERR_FILENO)) {
                     continue;
                 }
 
                 close(fd);
             }
 
-            fd = open("/dev/stdout", O_RDWR);
+            fd = open("/dev/null", O_RDWR);
 
             dup2(fd, STDIN_FILENO);
-            dup2(fd, STDOUT_FILENO);
-            dup2(fd, STDERR_FILENO);
+            // dup2(fd, STDOUT_FILENO);
+            // dup2(fd, STDERR_FILENO);
 
             args = ngx_alloc((ec->args.nelts + 2) * sizeof(char *), e->log);
             if (args == NULL) {
